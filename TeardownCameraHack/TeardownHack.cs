@@ -9,9 +9,10 @@ namespace TeardownCameraHack
 {
     public class TeardownHack
     {
-        private static readonly float NormalCameraSpeed = 0.01f;
-        private static readonly float FastCameraSpeed = 0.05f;
-        private static readonly float TurnSpeed = 0.001f;
+        private static readonly float NormalCameraSpeed = 5.0f;
+        private static readonly float FastCameraSpeed = 25.0f;
+        private static readonly float TurnSpeed = (float)Math.PI * 0.25f;
+        private static readonly float TickRate = 1.0f / 60.0f;
 
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
@@ -44,12 +45,17 @@ namespace TeardownCameraHack
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
-                var deltaTime = Math.Max(stopwatch.ElapsedMilliseconds / 1000.0f, 1.0f / 60.0f);
+                var deltaTime = stopwatch.ElapsedMilliseconds / 1000.0f;
+                if (deltaTime < TickRate)
+                {
+                    continue;
+                }
                 stopwatch.Restart();
 
                 var shouldUseFastCameraSpeed = _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT);
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
 
+                // camera position
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
                 {
                     camera.PositionZ += cameraMovementSpeed * deltaTime;
@@ -74,12 +80,8 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
-                {
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_C))
-                {
-                }
+
+                // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
                     scene.Light.Red -= deltaTime;
@@ -105,24 +107,15 @@ namespace TeardownCameraHack
                     scene.Light.Blue += deltaTime;
                 }
 
-                //Rotation
+                // camera rotation
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
                 {
-                    camera.Degrees += 0.00005f;
+                    camera.RotationY += TurnSpeed * deltaTime;
                 }
                 else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
                 {
-                    camera.Degrees -= 0.00005f;
+                    camera.RotationY -= TurnSpeed * deltaTime;
                 }
-                camera.Rotation1 = (float)Math.Cos(camera.Degrees);
-                camera.Rotation2 = (float)Math.Cos(camera.Degrees) / 1.5f;
-                camera.Rotation3 = (float)Math.Sin(camera.Degrees) / 1.5f;
-                camera.Rotation4 = -(float)Math.Sin(camera.Degrees);
-
-                // ToDo: sync player with camera
-                // world.Player.PositionX = camera.PositionX;
-                // world.Player.PositionY = camera.PositionY;
-                // world.Player.PositionZ = camera.PositionZ;
             }
         }
 

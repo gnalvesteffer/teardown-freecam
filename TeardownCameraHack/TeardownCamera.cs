@@ -1,3 +1,4 @@
+using System;
 using Squalr.Engine.Memory;
 
 namespace TeardownCameraHack
@@ -6,8 +7,6 @@ namespace TeardownCameraHack
     {
         private readonly ulong _cameraBaseAddress;
 
-        public double Degrees;
-
         public bool IsFogEnabled
         {
             get => !Reader.Default.Read<bool>(_cameraBaseAddress + 0x1C, out _);
@@ -15,6 +14,7 @@ namespace TeardownCameraHack
         }
 
         // valid range -1.0 through 0.0 (?)
+
         public float DrawDistance
         {
             get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1AC, out _);
@@ -37,6 +37,20 @@ namespace TeardownCameraHack
         {
             get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1EC, out _);
             set => Writer.Default.Write(_cameraBaseAddress + 0x1EC, value);
+        }
+
+        private float _rotationY;
+        public float RotationY
+        {
+            get => _rotationY;
+            set
+            {
+                _rotationY = value;
+                Rotation1 = (float)Math.Cos(_rotationY);
+                Rotation2 = (float)Math.Cos(_rotationY) / 1.5f;
+                Rotation3 = (float)Math.Sin(_rotationY) / 1.5f;
+                Rotation4 = -(float)Math.Sin(_rotationY);
+            }
         }
 
         public float Rotation1
