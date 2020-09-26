@@ -12,6 +12,7 @@ namespace TeardownCameraHack
         private static readonly float NormalCameraSpeed = 5.0f;
         private static readonly float FastCameraSpeed = 25.0f;
         private static readonly float TurnSpeed = (float)Math.PI * 0.25f;
+        private static readonly float LightColorChangeAmount = 25.0f;
         private static readonly float TickRate = 1.0f / 60.0f;
 
         private readonly InputSimulator _inputSimulator;
@@ -84,27 +85,27 @@ namespace TeardownCameraHack
                 // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
-                    scene.Light.Red -= deltaTime;
+                    scene.Light.Red -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
                 {
-                    scene.Light.Red += deltaTime;
+                    scene.Light.Red += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
                 {
-                    scene.Light.Green -= deltaTime;
+                    scene.Light.Green -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
                 {
-                    scene.Light.Green += deltaTime;
+                    scene.Light.Green += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
                 {
-                    scene.Light.Blue -= deltaTime;
+                    scene.Light.Blue -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
-                    scene.Light.Blue += deltaTime;
+                    scene.Light.Blue += LightColorChangeAmount * deltaTime;
                 }
 
                 // camera rotation
