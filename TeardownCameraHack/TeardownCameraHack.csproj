@@ -100,7 +100,8 @@
         <Compile Include="TeardownLight.cs" />
         <Compile Include="TeardownPlayer.cs" />
         <Compile Include="TeardownScene.cs" />
-        <Compile Include="TeardownWorld.cs" />
+        <Compile Include="TeardownSettings.cs" />
+        <Compile Include="TeardownVehicle.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

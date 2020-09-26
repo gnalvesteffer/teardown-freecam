@@ -9,11 +9,12 @@ namespace TeardownCameraHack
 {
     public class TeardownHack
     {
+        private static readonly float TickRate = 1.0f / 60.0f;
         private static readonly float NormalCameraSpeed = 5.0f;
         private static readonly float FastCameraSpeed = 25.0f;
         private static readonly float TurnSpeed = (float)Math.PI * 0.25f;
         private static readonly float LightColorChangeAmount = 25.0f;
-        private static readonly float TickRate = 1.0f / 60.0f;
+        private static readonly float FireSizeChangeAmount = 1.0f;
 
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
@@ -36,13 +37,15 @@ namespace TeardownCameraHack
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
             Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
+            Console.WriteLine("Use Up/Down arrows to change fire size.");
         }
 
         private void ControlLoop()
         {
-            var world = new TeardownWorld(this._teardownBaseAddress + 0x3E8B60);
-            var camera = new TeardownCamera(this._teardownBaseAddress + 0x003E2528);
-            var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(this._teardownBaseAddress + 0x3E8B60, out _), out _));
+            var settings = new TeardownSettings(_teardownBaseAddress);
+            var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
+            var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
+
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -82,6 +85,26 @@ namespace TeardownCameraHack
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
 
+                // camera rotation
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
+                {
+                    camera.RotationY += TurnSpeed * deltaTime;
+                }
+                else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
+                {
+                    camera.RotationY -= TurnSpeed * deltaTime;
+                }
+
+                // settings
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
+                {
+                    settings.FireSize += FireSizeChangeAmount * deltaTime;
+                }
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.DOWN))
+                {
+                    settings.FireSize -= FireSizeChangeAmount * deltaTime;
+                }
+
                 // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
@@ -106,16 +129,6 @@ namespace TeardownCameraHack
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
                     scene.Light.Blue += LightColorChangeAmount * deltaTime;
-                }
-
-                // camera rotation
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
-                {
-                    camera.RotationY += TurnSpeed * deltaTime;
-                }
-                else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
-                {
-                    camera.RotationY -= TurnSpeed * deltaTime;
                 }
             }
         }

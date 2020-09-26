@@ -4,7 +4,7 @@ namespace TeardownCameraHack
 {
     public class TeardownScene
     {
-        private readonly ulong _pointer;
+        private readonly ulong _address;
 
         private TeardownLight _light;
 
@@ -16,13 +16,13 @@ namespace TeardownCameraHack
                 {
                     return _light;
                 }
-                return _light = new TeardownLight(Reader.Default.Read<ulong>(_pointer + 0xE8, out _));
+                return _light = new TeardownLight(Reader.Default.Read<ulong>(_address + 0xE8, out _));
             }
         }
 
-        public TeardownScene(ulong pointer)
+        public TeardownScene(ulong address)
         {
-            _pointer = pointer;
+            _address = address;
         }
     }
 }
