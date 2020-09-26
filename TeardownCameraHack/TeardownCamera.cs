@@ -6,6 +6,8 @@ namespace TeardownCameraHack
     {
         private readonly ulong _cameraBaseAddress;
 
+        public double Degrees;
+
         public bool IsFogEnabled
         {
             get => !Reader.Default.Read<bool>(_cameraBaseAddress + 0x1C, out _);
@@ -37,30 +39,28 @@ namespace TeardownCameraHack
             set => Writer.Default.Write(_cameraBaseAddress + 0x1EC, value);
         }
 
-        public float HorizontalFov1
+        public float Rotation1
         {
             get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1B4, out _);
             set => Writer.Default.Write(_cameraBaseAddress + 0x1B4, value);
         }
 
-        // Should be set to the value of HorizontalFov1
-        public float HorizontalFov2
-        {
-            get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1D4, out _);
-            set => Writer.Default.Write(_cameraBaseAddress + 0x1D4, value);
-        }
-
-        public float VerticalFov1
+        public float Rotation2
         {
             get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1DC, out _);
             set => Writer.Default.Write(_cameraBaseAddress + 0x1DC, value);
         }
 
-        // Should be set to the negative value of VerticalFov1
-        public float VerticalFov2
+        public float Rotation3
         {
             get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1BC, out _);
             set => Writer.Default.Write(_cameraBaseAddress + 0x1BC, value);
+        }
+
+        public float Rotation4
+        {
+            get => Reader.Default.Read<float>(_cameraBaseAddress + 0x1D4, out _);
+            set => Writer.Default.Write(_cameraBaseAddress + 0x1D4, value);
         }
 
         public TeardownCamera(ulong pointer)
