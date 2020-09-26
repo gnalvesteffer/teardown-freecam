@@ -33,7 +33,7 @@ namespace TeardownCameraHack
         private void DisplayInstructions()
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
-            Console.WriteLine("Use WASD/QE/Shift to move.");
+            Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
         }
 
         private void ControlLoop()
@@ -104,6 +104,20 @@ namespace TeardownCameraHack
                 {
                     scene.Light.Blue += deltaTime;
                 }
+
+                //Rotation
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
+                {
+                    camera.Degrees += 0.00005f;
+                }
+                else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
+                {
+                    camera.Degrees -= 0.00005f;
+                }
+                camera.Rotation1 = (float)Math.Cos(camera.Degrees);
+                camera.Rotation2 = (float)Math.Cos(camera.Degrees) / 1.5f;
+                camera.Rotation3 = (float)Math.Sin(camera.Degrees) / 1.5f;
+                camera.Rotation4 = -(float)Math.Sin(camera.Degrees);
 
                 // ToDo: sync player with camera
                 // world.Player.PositionX = camera.PositionX;
