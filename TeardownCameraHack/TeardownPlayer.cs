@@ -24,9 +24,9 @@ namespace TeardownCameraHack
             set => Writer.Default.Write(_playerBaseAddress + 0x38, value);
         }
 
-        public TeardownPlayer(ulong playerBaseAddress)
+        public TeardownPlayer(ulong pointer)
         {
-            _playerBaseAddress = playerBaseAddress;
+            _playerBaseAddress = pointer;
         }
     }
 }

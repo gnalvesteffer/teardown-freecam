@@ -9,7 +9,6 @@ namespace TeardownCameraHack
         public static void Main(string[] args)
         {
             HackTeardown();
-            DisplayInstructions();
         }
 
         private static void HackTeardown()
@@ -25,12 +24,6 @@ namespace TeardownCameraHack
                 Console.WriteLine("Run the game first, and then run this hack.");
                 throw new Exception("Failed to find Teardown process.");
             }
-        }
-
-        private static void DisplayInstructions()
-        {
-            Console.WriteLine("Teardown Camera Hack by Xorberax");
-            Console.WriteLine("Use WASD to move, and the mouse to turn.");
         }
     }
 }

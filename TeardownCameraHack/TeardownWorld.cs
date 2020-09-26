@@ -2,7 +2,7 @@ namespace TeardownCameraHack
 {
     public class TeardownWorld
     {
-        private readonly ulong _worldBaseAddress;
+        private readonly ulong _pointer;
         private readonly ulong _playerPointer;
 
         private TeardownPlayer _player;
@@ -18,10 +18,10 @@ namespace TeardownCameraHack
             }
         }
 
-        public TeardownWorld(ulong teardownBaseAddress)
+        public TeardownWorld(ulong pointer)
         {
-            _worldBaseAddress = teardownBaseAddress + 0x3E8B60;
-            _playerPointer = _worldBaseAddress + 0xE8;
+            _pointer = pointer;
+            _playerPointer = _pointer + 0xE8;
         }
     }
 }

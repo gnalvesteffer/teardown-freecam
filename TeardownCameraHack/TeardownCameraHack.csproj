@@ -97,7 +97,9 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="TeardownCamera.cs" />
         <Compile Include="TeardownHack.cs" />
+        <Compile Include="TeardownLight.cs" />
         <Compile Include="TeardownPlayer.cs" />
+        <Compile Include="TeardownScene.cs" />
         <Compile Include="TeardownWorld.cs" />
     </ItemGroup>
     <ItemGroup>
