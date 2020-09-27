@@ -30,7 +30,7 @@ namespace TeardownCameraHack
         {
             DisplayInstructions();
             ApplyPatches();
-            ControlLoop();
+            HackLoop();
         }
 
         private void DisplayInstructions()
@@ -40,7 +40,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Use Up/Down arrows to change fire size.");
         }
 
-        private void ControlLoop()
+        private void HackLoop()
         {
             var settings = new TeardownSettings(_teardownBaseAddress);
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
