@@ -43,6 +43,7 @@ namespace TeardownCameraHack
         private void ControlLoop()
         {
             var settings = new TeardownSettings(_teardownBaseAddress);
+            var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
             var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
             var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
 
