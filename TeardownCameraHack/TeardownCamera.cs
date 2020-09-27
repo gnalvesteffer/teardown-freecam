@@ -47,9 +47,9 @@ namespace TeardownCameraHack
             {
                 _rotationY = value;
                 Rotation1 = (float)Math.Cos(_rotationY);
-                Rotation2 = (float)Math.Cos(_rotationY);
+                Rotation2 = Rotation1;
                 Rotation3 = (float)Math.Sin(_rotationY);
-                Rotation4 = -(float)Math.Sin(_rotationY);
+                Rotation4 = -Rotation3;
             }
         }
 
