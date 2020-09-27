@@ -4,8 +4,6 @@ using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
 using Squalr.Engine.OS;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace TeardownCameraHack
 {
@@ -89,26 +87,9 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
-
-                //camera.PositionX = localX;
-                //camera.PositionZ = localZ;
-                Console.WriteLine("locX: " + localX);
-                Console.WriteLine("locZ: " + localZ);
-                Console.WriteLine("rotY: " + camera.RotationY);
-                Console.WriteLine("posX: " + camera.PositionX);
-                Console.WriteLine("posZ: " + camera.PositionZ);
-                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 5);
-                /*if(camera.RotationY > 6.28f)
-                {
-                    camera.RotationY = 0f;
-                }
-                if (camera.RotationY < 0f)
-                {
-                    camera.RotationY = 6.28f;
-                } */
+                
                 camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
                 camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
-
 
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_H))
                 {
