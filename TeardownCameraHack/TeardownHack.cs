@@ -120,7 +120,7 @@ namespace TeardownCameraHack
                 {
                     camera.RotationY += TurnSpeed * deltaTime;
                 }
-                else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
                 {
                     camera.RotationY -= TurnSpeed * deltaTime;
                 }
