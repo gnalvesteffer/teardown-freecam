@@ -18,6 +18,12 @@ namespace TeardownCameraHack
             set => Writer.Default.Write(_teardownBaseAddress + 0x2EE638, value);
         }
 
+        public float BulletDespawnDistance
+        {
+            get => Reader.Default.Read<float>(_teardownBaseAddress + 0x2F2BAC, out _);
+            set => Writer.Default.Write(_teardownBaseAddress + 0x2F2BAC, value);
+        }
+
         public TeardownSettings(ulong teardownBaseAddress)
         {
             _teardownBaseAddress = teardownBaseAddress;
