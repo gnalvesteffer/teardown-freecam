@@ -109,7 +109,7 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
-
+                
                 camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
                 camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
 
