@@ -37,7 +37,8 @@ namespace TeardownCameraHack
         private void DisplayInstructions()
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
-            Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
+            Console.WriteLine("Use WASD/QE/Shift to move.");
+            Console.WriteLine("Right button mouse for camera rotate");
             Console.WriteLine("Use Up/Down arrows to change fire size.");
             Console.WriteLine("Use 1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("Use 7 to change the projectile type.");
