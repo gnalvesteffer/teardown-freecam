@@ -13,10 +13,15 @@ namespace TeardownCameraHack
             set => Writer.Default.Write(_address + 0x1C, !value);
         }
 
-        // valid range -1.0 through 0.0 (?)
+        public float LifeTime
+        {
+            get => Reader.Default.Read<float>(_address + 0x14C, out _);
+            set => Writer.Default.Write(_address + 0x14C, value);
+        }
 
         public float DrawDistance
         {
+            // valid range -1.0 through 1.0
             get => Reader.Default.Read<float>(_address + 0x1AC, out _);
             set => Writer.Default.Write(_address + 0x1AC, value);
         }

@@ -34,16 +34,8 @@
         <Prefer32bit>false</Prefer32bit>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="Fasm.NET, Version=1.0.4939.27955, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\Fasm.NET.1.70.03\lib\Fasm.NET.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="mscorlib" />
-        <Reference Include="SharpDisasm, Version=1.0.1.0, Culture=neutral, PublicKeyToken=3c6f10d5f3df8ab7">
-          <HintPath>..\packages\SharpDisasmStandard.1.0.1\lib\netstandard2.0\SharpDisasm.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Squalr.Engine, Version=2.3.0.1, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\packages\Squalr.Engine.2.3.0.1\lib\netstandard2.0\Squalr.Engine.dll</HintPath>
           <Private>True</Private>
@@ -59,9 +51,6 @@
           <Private>True</Private>
         </Reference>
         <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Data.OracleClient" />
-        <Reference Include="System.Drawing" />
         <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
           <HintPath>..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
           <Private>True</Private>
@@ -84,8 +73,7 @@
           <HintPath>..\packages\System.Security.Principal.Windows.4.5.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
           <Private>True</Private>
         </Reference>
-        <Reference Include="System.ServiceProcess" />
-        <Reference Include="System.Transactions" />
+        <Reference Include="System.Windows" />
         <Reference Include="System.Xml" />
         <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad">
           <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
@@ -100,6 +88,7 @@
         <Compile Include="TeardownInput.cs" />
         <Compile Include="TeardownLight.cs" />
         <Compile Include="TeardownPlayer.cs" />
+        <Compile Include="TeardownProjectileType.cs" />
         <Compile Include="TeardownScene.cs" />
         <Compile Include="TeardownSettings.cs" />
         <Compile Include="TeardownVehicle.cs" />
