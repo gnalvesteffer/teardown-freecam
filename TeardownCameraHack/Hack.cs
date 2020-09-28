@@ -31,7 +31,7 @@ namespace TeardownCameraHack
         {
             DisplayInstructions();
             ApplyPatches();
-            HackLoop();
+            MainLoop();
         }
 
         private void DisplayInstructions()
@@ -43,7 +43,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Use 7 to change the projectile type.");
         }
 
-        private void HackLoop()
+        private void MainLoop()
         {
             var settings = new TeardownSettings(_teardownBaseAddress);
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
