@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
@@ -9,9 +10,12 @@ namespace TeardownCameraHack
 {
     public class TeardownHack
     {
-        private static readonly float NormalCameraSpeed = 0.01f;
-        private static readonly float FastCameraSpeed = 0.05f;
-        private static readonly float TurnSpeed = 0.001f;
+        private static readonly float TickRate = 1.0f / 60.0f;
+        private static readonly float NormalCameraSpeed = 5.0f;
+        private static readonly float FastCameraSpeed = 25.0f;
+        private static readonly float TurnSpeed = (float)Math.PI * 0.5f;
+        private static readonly float LightColorChangeAmount = 25.0f;
+        private static readonly float FireSizeChangeAmount = 1.0f;
 
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
@@ -27,44 +31,63 @@ namespace TeardownCameraHack
         {
             DisplayInstructions();
             ApplyPatches();
-            ControlLoop();
+            HackLoop();
         }
 
         private void DisplayInstructions()
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
             Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
+            Console.WriteLine("Use Up/Down arrows to change fire size.");
+            Console.WriteLine("Use 1,2,3,4,5,6 to change the flashlight color.");
+            Console.WriteLine("Use 7 to change the projectile type.");
         }
 
-        private void ControlLoop()
+        private void HackLoop()
         {
-            var world = new TeardownWorld(this._teardownBaseAddress + 0x3E8B60);
-            var camera = new TeardownCamera(this._teardownBaseAddress + 0x003E2528);
-            var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(this._teardownBaseAddress + 0x3E8B60, out _), out _));
+            var settings = new TeardownSettings(_teardownBaseAddress);
+            var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
+            var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
+            var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
+            float localX = 0;
+            float localZ = 0;
+            camera.RotationY = 0;
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
-                var deltaTime = Math.Max(stopwatch.ElapsedMilliseconds / 1000.0f, 1.0f / 60.0f);
+                var deltaTime = stopwatch.ElapsedMilliseconds / 1000.0f;
+                if (deltaTime < TickRate)
+                {
+                    continue;
+                }
                 stopwatch.Restart();
 
                 var shouldUseFastCameraSpeed = _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT);
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
 
+                // camera position
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
                 {
-                    camera.PositionZ += cameraMovementSpeed * deltaTime;
+                    // localZ += cameraMovementSpeed * deltaTime;
+                    localZ += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
                 {
-                    camera.PositionZ -= cameraMovementSpeed * deltaTime;
+                    // localZ -= cameraMovementSpeed * deltaTime;
+                    localZ -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
                 {
-                    camera.PositionX += cameraMovementSpeed * deltaTime;
+                    // localX += cameraMovementSpeed * deltaTime;
+                    localZ -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
                 {
-                    camera.PositionX -= cameraMovementSpeed * deltaTime;
+                    localZ += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
                 {
@@ -74,55 +97,67 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
+                
+                camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
+                camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
+
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_H))
+                {
+                    Thread.Sleep(500);
+                    camera.RotationY += 1.57f;
+                }
+                // camera rotation
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
                 {
+                    camera.RotationY += TurnSpeed * deltaTime;
                 }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_C))
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
                 {
+                    camera.RotationY -= TurnSpeed * deltaTime;
                 }
+
+                // settings
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
+                {
+                    settings.FireSize += FireSizeChangeAmount * deltaTime;
+                }
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.DOWN))
+                {
+                    settings.FireSize -= FireSizeChangeAmount * deltaTime;
+                }
+
+                // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
-                    scene.Light.Red -= deltaTime;
+                    scene.Light.Red -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
                 {
-                    scene.Light.Red += deltaTime;
+                    scene.Light.Red += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
                 {
-                    scene.Light.Green -= deltaTime;
+                    scene.Light.Green -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
                 {
-                    scene.Light.Green += deltaTime;
+                    scene.Light.Green += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
                 {
-                    scene.Light.Blue -= deltaTime;
+                    scene.Light.Blue -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
-                    scene.Light.Blue += deltaTime;
+                    scene.Light.Blue += LightColorChangeAmount * deltaTime;
                 }
 
-                //Rotation
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
+                // change projectile type
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_7))
                 {
-                    camera.Degrees += 0.00005f;
+                    Console.Beep(500, 200); // HACK: utilize the beep to notify the player that the type changed, and to delay the keystrokes, preventing the types from cycling quickly -- replace this with a keypress/key-up check instead
+                    settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
                 }
-                else if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
-                {
-                    camera.Degrees -= 0.00005f;
-                }
-                camera.Rotation1 = (float)Math.Cos(camera.Degrees);
-                camera.Rotation2 = (float)Math.Cos(camera.Degrees) / 1.5f;
-                camera.Rotation3 = (float)Math.Sin(camera.Degrees) / 1.5f;
-                camera.Rotation4 = -(float)Math.Sin(camera.Degrees);
-
-                // ToDo: sync player with camera
-                // world.Player.PositionX = camera.PositionX;
-                // world.Player.PositionY = camera.PositionY;
-                // world.Player.PositionZ = camera.PositionZ;
             }
         }
 
@@ -132,8 +167,8 @@ namespace TeardownCameraHack
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E750, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera position assignment
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
         }
