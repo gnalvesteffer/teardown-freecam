@@ -1,18 +1,20 @@
 using Squalr.Engine.Memory;
 
-namespace TeardownCameraHack
+namespace TeardownCameraHack.TeardownModels
 {
     public class TeardownInput
     {
         private readonly ulong _address;
 
-        public int MouseScreenPositionX
+        public float LastPositionX;
+
+        public int MouseWindowPositionX
         {
             get => Reader.Default.Read<int>(_address + 0x0, out _);
             set => Writer.Default.Write(_address + 0x0, value);
         }
 
-        public int MouseScreenPositionY
+        public int MouseWindowPositionY
         {
             get => Reader.Default.Read<int>(_address + 0x4, out _);
             set => Writer.Default.Write(_address + 0x4, value);
@@ -28,6 +30,11 @@ namespace TeardownCameraHack
         {
             get => Reader.Default.Read<int>(_address + 0x42C, out _);
             set => Writer.Default.Write(_address + 0x42C, value);
+        }
+
+        public int MouseLastScreenPositionX
+        {
+            get => MouseWindowPositionX;
         }
 
         public TeardownInput(ulong address)

@@ -1,11 +1,12 @@
 using System;
 using Squalr.Engine.Memory;
 
-namespace TeardownCameraHack
+namespace TeardownCameraHack.TeardownModels
 {
     public class TeardownCamera
     {
         private readonly ulong _address;
+
 
         public bool IsFogEnabled
         {
