@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
@@ -13,7 +14,7 @@ namespace TeardownCameraHack
         private static readonly float TickRate = 1.0f / 60.0f;
         private static readonly float NormalCameraSpeed = 5.0f;
         private static readonly float FastCameraSpeed = 25.0f;
-        private static readonly float TurnSpeed = (float)Math.PI * 0.25f;
+        private static readonly float TurnSpeed = (float)Math.PI * 0.1f;
         private static readonly float LightColorChangeAmount = 25.0f;
         private static readonly float FireSizeChangeAmount = 1.0f;
 
@@ -37,10 +38,14 @@ namespace TeardownCameraHack
         private void DisplayInstructions()
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
-            Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
-            Console.WriteLine("Use Up/Down arrows to change fire size.");
-            Console.WriteLine("Use 1,2,3,4,5,6 to change the flashlight color.");
-            Console.WriteLine("Use 7 to change the projectile type.");
+            Console.WriteLine("Special thanks to Danyadd and TheOwlOfLife for their contributions!");
+            Console.WriteLine();
+            Console.WriteLine("Controls:");
+            Console.WriteLine("Use WASD/QE/Shift to move.");
+            Console.WriteLine("Click and drag the Right Mouse Button to turn.");
+            Console.WriteLine("Up/Down arrows to change fire size.");
+            Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
+            Console.WriteLine("7 to change the projectile type.");
         }
 
         private void ApplyPatches()
@@ -62,6 +67,11 @@ namespace TeardownCameraHack
             var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
             var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
 
+            // camera rotation vars
+            var virtualCameraPosition = new Vector3();
+            var previousMousePositionX = 0;
+            var lastMousePositionX = (float)input.MouseWindowPositionX;
+
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -78,38 +88,42 @@ namespace TeardownCameraHack
                 // camera position
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
                 {
-                    camera.PositionZ += cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.X += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Z += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
                 {
-                    camera.PositionZ -= cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.X -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Z -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
                 {
-                    camera.PositionX += cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.X += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Z -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
                 {
-                    camera.PositionX -= cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.X -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Z += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
                 {
-                    camera.PositionY += cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Y += cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_E))
                 {
-                    camera.PositionY -= cameraMovementSpeed * deltaTime;
+                    virtualCameraPosition.Y -= cameraMovementSpeed * deltaTime;
                 }
 
                 // camera rotation
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.RBUTTON))
                 {
-                    camera.RotationY += TurnSpeed * deltaTime;
+                    lastMousePositionX += (previousMousePositionX - input.MouseWindowPositionX) * TurnSpeed * deltaTime;
                 }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
-                {
-                    camera.RotationY -= TurnSpeed * deltaTime;
-                }
+                camera.RotationY = lastMousePositionX;
+                camera.PositionX = virtualCameraPosition.X * (float)Math.Cos(camera.RotationY) - virtualCameraPosition.Z * (float)Math.Sin(camera.RotationY);
+                camera.PositionY = virtualCameraPosition.Y;
+                camera.PositionZ = virtualCameraPosition.X * (float)Math.Sin(camera.RotationY) + virtualCameraPosition.Z * (float)Math.Cos(camera.RotationY);
 
                 // settings
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
@@ -153,6 +167,8 @@ namespace TeardownCameraHack
                     Console.Beep(500, 200); // HACK: utilize the beep to notify the player that the type changed, and to delay the keystrokes, preventing the types from cycling quickly -- replace this with a keypress/key-up check instead
                     settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
                 }
+
+                previousMousePositionX = input.MouseWindowPositionX;
             }
         }
     }
