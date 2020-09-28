@@ -87,7 +87,7 @@
         <Compile Include="TeardownHack.cs" />
         <Compile Include="TeardownInput.cs" />
         <Compile Include="TeardownLight.cs" />
-        <Compile Include="TeardownPlayer.cs" />
+        <Compile Include="TeardownProjectile.cs" />
         <Compile Include="TeardownProjectileType.cs" />
         <Compile Include="TeardownScene.cs" />
         <Compile Include="TeardownSettings.cs" />
