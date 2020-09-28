@@ -83,15 +83,15 @@
     <ItemGroup>
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="TeardownCamera.cs" />
-        <Compile Include="TeardownHack.cs" />
-        <Compile Include="TeardownInput.cs" />
-        <Compile Include="TeardownLight.cs" />
-        <Compile Include="TeardownProjectile.cs" />
-        <Compile Include="TeardownProjectileType.cs" />
-        <Compile Include="TeardownScene.cs" />
-        <Compile Include="TeardownSettings.cs" />
-        <Compile Include="TeardownVehicle.cs" />
+        <Compile Include="Hack.cs" />
+        <Compile Include="TeardownModels\TeardownCamera.cs" />
+        <Compile Include="TeardownModels\TeardownInput.cs" />
+        <Compile Include="TeardownModels\TeardownLight.cs" />
+        <Compile Include="TeardownModels\TeardownProjectile.cs" />
+        <Compile Include="TeardownModels\TeardownProjectileType.cs" />
+        <Compile Include="TeardownModels\TeardownScene.cs" />
+        <Compile Include="TeardownModels\TeardownSettings.cs" />
+        <Compile Include="TeardownModels\TeardownVehicle.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

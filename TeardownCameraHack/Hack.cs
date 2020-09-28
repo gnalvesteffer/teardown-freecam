@@ -1,14 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
 using Squalr.Engine.OS;
+using TeardownCameraHack.TeardownModels;
 
 namespace TeardownCameraHack
 {
-    public class TeardownHack
+    public class Hack
     {
         private static readonly float TickRate = 1.0f / 60.0f;
         private static readonly float NormalCameraSpeed = 5.0f;
@@ -20,7 +20,7 @@ namespace TeardownCameraHack
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
 
-        public TeardownHack(Process teardownProcess)
+        public Hack(Process teardownProcess)
         {
             _inputSimulator = new InputSimulator();
             _teardownBaseAddress = (ulong)teardownProcess.MainModule.BaseAddress;
@@ -112,27 +112,27 @@ namespace TeardownCameraHack
                 // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
-                    scene.Light.Red -= LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
                 {
-                    scene.Light.Red += LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
                 {
-                    scene.Light.Green -= LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
                 {
-                    scene.Light.Green += LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
                 {
-                    scene.Light.Blue -= LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
-                    scene.Light.Blue += LightColorChangeAmount * deltaTime;
+                    scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
                 }
 
                 // change projectile type

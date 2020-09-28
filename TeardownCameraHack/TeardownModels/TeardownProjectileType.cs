@@ -1,4 +1,4 @@
-namespace TeardownCameraHack
+namespace TeardownCameraHack.TeardownModels
 {
     public enum TeardownProjectileType : byte
     {

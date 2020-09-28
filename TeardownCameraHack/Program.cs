@@ -8,15 +8,10 @@ namespace TeardownCameraHack
     {
         public static void Main(string[] args)
         {
-            HackTeardown();
-        }
-
-        private static void HackTeardown()
-        {
             var teardownProcess = Process.GetProcessesByName("teardown-perftest").FirstOrDefault();
             if (teardownProcess != null)
             {
-                new TeardownHack(teardownProcess).Start();
+                new Hack(teardownProcess).Start();
             }
             else
             {

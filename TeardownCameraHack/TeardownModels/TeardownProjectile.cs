@@ -1,6 +1,6 @@
 using Squalr.Engine.Memory;
 
-namespace TeardownCameraHack
+namespace TeardownCameraHack.TeardownModels
 {
     public class TeardownProjectile
     {
