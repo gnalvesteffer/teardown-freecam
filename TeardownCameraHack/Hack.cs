@@ -61,7 +61,9 @@ namespace TeardownCameraHack
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
             var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
             var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
-
+            float localX = 0;
+            float localZ = 0;
+            camera.RotationY = 0;
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -78,19 +80,26 @@ namespace TeardownCameraHack
                 // camera position
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
                 {
-                    camera.PositionZ += cameraMovementSpeed * deltaTime;
+                    // localZ += cameraMovementSpeed * deltaTime;
+                    localZ += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
                 {
-                    camera.PositionZ -= cameraMovementSpeed * deltaTime;
+                    // localZ -= cameraMovementSpeed * deltaTime;
+                    localZ -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
                 {
-                    camera.PositionX += cameraMovementSpeed * deltaTime;
+                    // localX += cameraMovementSpeed * deltaTime;
+                    localZ -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
                 {
-                    camera.PositionX -= cameraMovementSpeed * deltaTime;
+                    localZ += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
+                    localX -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
                 {
@@ -100,6 +109,9 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
+
+                camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
+                camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
 
                 // camera rotation
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
