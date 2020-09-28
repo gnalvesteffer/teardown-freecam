@@ -24,6 +24,12 @@ namespace TeardownCameraHack
             set => Writer.Default.Write(_teardownBaseAddress + 0x2F2BAC, value);
         }
 
+        public TeardownProjectileType BulletType
+        {
+            get => (TeardownProjectileType)Reader.Default.Read<byte>(_teardownBaseAddress + 0x1F2A24, out _);
+            set => Writer.Default.Write(_teardownBaseAddress + 0x1F2A24, (byte)value);
+        }
+
         public TeardownSettings(ulong teardownBaseAddress)
         {
             _teardownBaseAddress = teardownBaseAddress;

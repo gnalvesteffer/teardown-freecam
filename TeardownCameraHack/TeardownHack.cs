@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
@@ -38,6 +39,8 @@ namespace TeardownCameraHack
             Console.WriteLine("Teardown Camera Hack by Xorberax");
             Console.WriteLine("Use WASD/QE/ZX/Shift to move.");
             Console.WriteLine("Use Up/Down arrows to change fire size.");
+            Console.WriteLine("Use 1,2,3,4,5,6 to change the flashlight color.");
+            Console.WriteLine("Use 7 to change the projectile type.");
         }
 
         private void HackLoop()
@@ -131,6 +134,13 @@ namespace TeardownCameraHack
                 {
                     scene.Light.Blue += LightColorChangeAmount * deltaTime;
                 }
+
+                // change projectile type
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_7))
+                {
+                    Console.Beep(500, 200); // HACK: utilize the beep to notify the player that the type changed, and to delay the keystrokes, preventing the types from cycling quickly -- replace this with a keypress/key-up check instead
+                    settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
+                }
             }
         }
 
@@ -140,8 +150,8 @@ namespace TeardownCameraHack
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E750, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera position assignment
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
         }
