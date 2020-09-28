@@ -46,6 +46,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Up/Down arrows to change fire size.");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
+            Console.WriteLine("Capslock to toggle autoclicker.");
         }
 
         private void ApplyPatches()
@@ -113,6 +114,16 @@ namespace TeardownCameraHack
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_E))
                 {
                     virtualCameraPosition.Y -= cameraMovementSpeed * deltaTime;
+                }
+
+                // autoclicker
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.CAPITAL))
+                {
+                    Console.Beep(700, 200);
+                }
+                if (_inputSimulator.InputDeviceState.IsTogglingKeyInEffect(VirtualKeyCode.CAPITAL) && _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.LBUTTON))
+                {
+                    _inputSimulator.Mouse.LeftButtonDown();
                 }
 
                 // camera rotation
