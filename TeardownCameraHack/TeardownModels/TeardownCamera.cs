@@ -82,9 +82,9 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x1D4, value);
         }
 
-        public TeardownCamera(ulong pointer)
+        public TeardownCamera(ulong address)
         {
-            _address = Reader.Default.Read<ulong>(pointer, out _);
+            _address = Reader.Default.Read<ulong>(address, out _);
         }
     }
 }
