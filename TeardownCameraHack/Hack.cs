@@ -109,9 +109,6 @@ namespace TeardownCameraHack
                 {
                     camera.PositionY -= cameraMovementSpeed * deltaTime;
                 }
-                
-                camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
-                camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
 
                 // camera rotation
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Z))
@@ -122,6 +119,9 @@ namespace TeardownCameraHack
                 {
                     camera.RotationY -= TurnSpeed * deltaTime;
                 }
+
+                camera.PositionX = localX * (float)Math.Cos(camera.RotationY) - localZ * (float)Math.Sin(camera.RotationY);
+                camera.PositionZ = localX * (float)Math.Sin(camera.RotationY) + localZ * (float)Math.Cos(camera.RotationY);
 
                 // settings
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
