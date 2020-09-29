@@ -44,6 +44,12 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x18, value);
         }
 
+        public TeardownProjectileType Type
+        {
+            get => (TeardownProjectileType)Reader.Default.Read<byte>(_address + 0x20, out _);
+            set => Writer.Default.Write(_address + 0x20, (byte)value);
+        }
+
         public TeardownProjectile(ulong address)
         {
             _address = address;
