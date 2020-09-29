@@ -31,6 +31,30 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x38, value);
         }
 
+        public float Rotation1
+        {
+            get => Reader.Default.Read<float>(_address + 0x3C, out _);
+            set => Writer.Default.Write(_address + 0x3C, value);
+        }
+
+        public float Rotation2
+        {
+            get => Reader.Default.Read<float>(_address + 0x40, out _);
+            set => Writer.Default.Write(_address + 0x40, value);
+        }
+
+        public float Rotation3
+        {
+            get => Reader.Default.Read<float>(_address + 0x44, out _);
+            set => Writer.Default.Write(_address + 0x44, value);
+        }
+
+        public float Rotation4
+        {
+            get => Reader.Default.Read<float>(_address + 0x48, out _);
+            set => Writer.Default.Write(_address + 0x44, value);
+        }
+
         public float Red
         {
             get => Reader.Default.Read<float>(_address + 0x4C, out _);
