@@ -57,8 +57,8 @@ namespace TeardownCameraHack
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
             //Writer.Default.WriteBytes(_teardownBaseAddress + 0x312D1, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // pause time
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
+            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
+            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
         }
@@ -67,7 +67,6 @@ namespace TeardownCameraHack
         {
             var settings = new TeardownSettings(_teardownBaseAddress);
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
-            var scene = new TeardownScene(Reader.Default.Read<ulong>(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8B60, out _), out _));
             var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
 
             // camera rotation vars
@@ -138,6 +137,11 @@ namespace TeardownCameraHack
                 camera.PositionY = virtualCameraPosition.Y;
                 camera.PositionZ = virtualCameraPosition.X * (float)Math.Sin(camera.RotationY) + virtualCameraPosition.Z * (float)Math.Cos(camera.RotationY);
 
+                // sync flashlight with camera
+                camera.Scene.FlashLight.PositionX = -virtualCameraPosition.X;
+                camera.Scene.FlashLight.PositionY = -virtualCameraPosition.Y;
+                camera.Scene.FlashLight.PositionZ = -virtualCameraPosition.Z;
+
                 // settings
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
                 {
@@ -151,27 +155,27 @@ namespace TeardownCameraHack
                 // light color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
-                    scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
                 {
-                    scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
                 {
-                    scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
                 {
-                    scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
                 {
-                    scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
-                    scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
+                    camera.Scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
                 }
 
                 // change projectile type

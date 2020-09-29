@@ -13,6 +13,15 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x1C, !value);
         }
 
+        public TeardownScene Scene
+        {
+            get
+            {
+                var sceneAddress = Reader.Default.Read<ulong>(_address + 0x40, out _);
+                return new TeardownScene(sceneAddress);
+            }
+        }
+
         public float LifeTime
         {
             get => Reader.Default.Read<float>(_address + 0x14C, out _);
@@ -45,6 +54,7 @@ namespace TeardownCameraHack.TeardownModels
         }
 
         private float _rotationY;
+
         public float RotationY
         {
             get => _rotationY;
