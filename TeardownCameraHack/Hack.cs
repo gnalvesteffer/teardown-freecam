@@ -205,7 +205,6 @@ namespace TeardownCameraHack
                 {
                     if (!projectileToggleFlag)
                     {
-                        //var bulletTypeIndex = (((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length)
                         var bulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
                         Console.Clear();
                         DisplayInstructions();
