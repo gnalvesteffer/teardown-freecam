@@ -6,6 +6,7 @@ using WindowsInput.Native;
 using Squalr.Engine.Memory;
 using Squalr.Engine.OS;
 using TeardownCameraHack.TeardownModels;
+using TeardownCameraHack.Utilities;
 
 namespace TeardownCameraHack
 {
@@ -14,9 +15,10 @@ namespace TeardownCameraHack
         private static readonly float TickRate = 1.0f / 60.0f;
         private static readonly float NormalCameraSpeed = 5.0f;
         private static readonly float FastCameraSpeed = 25.0f;
-        private static readonly float TurnSpeed = (float)Math.PI * 0.1f;
+        private static readonly float TurnSpeed = (float)Math.PI * 0.05f;
         private static readonly float LightColorChangeAmount = 25.0f;
         private static readonly float FireSizeChangeAmount = 1.0f;
+        private static readonly float DrawDistanceChangeAmount = 0.1f;
 
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
@@ -46,6 +48,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Up/Down arrows to change fire size.");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
+            Console.WriteLine("-,+ to change the draw distance.");
             Console.WriteLine("Capslock to toggle autoclicker.");
         }
 
@@ -53,12 +56,14 @@ namespace TeardownCameraHack
         {
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x1F2533, new byte[] { 0xEB }); // prevent mission from ending after 60 seconds
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x1F2798, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // allow player to shoot after 60 seconds
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E750, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera position assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            //Writer.Default.WriteBytes(_teardownBaseAddress + 0x312D1, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // pause time
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
+            Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E734, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent draw distance assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E750, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x312D1, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // pause time
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
+            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC69C2, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent light rotation assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
             // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
         }
@@ -69,11 +74,8 @@ namespace TeardownCameraHack
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
             var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
 
-            // camera rotation vars
-            var virtualCameraPosition = new Vector3();
-            var previousMousePositionX = 0;
-            var lastMousePositionX = (float)input.MouseWindowPositionX;
-
+            var lastMousePositionX = input.MouseWindowPositionX;
+            var cameraRotationY = 0.0f;
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -84,37 +86,59 @@ namespace TeardownCameraHack
                 }
                 stopwatch.Restart();
 
+                if (camera.Time < 60.0f) // skip to end of level so that the last location of the camera path is always attempting to be reached
+                {
+                    camera.Time = 60.0f;
+                }
+
                 var shouldUseFastCameraSpeed = _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT);
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
+                var currentMousePositionX = input.MouseWindowPositionX;
 
-                // camera position
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
+                var location = camera.Scene.Locations.Length > 0
+                    ? camera.Scene.Locations[camera.Scene.Locations.Length - 2]
+                    : null;
+                if (location != null)
                 {
-                    virtualCameraPosition.X += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                    virtualCameraPosition.Z += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
-                {
-                    virtualCameraPosition.X -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                    virtualCameraPosition.Z -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
-                {
-                    virtualCameraPosition.X += (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                    virtualCameraPosition.Z -= (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
-                {
-                    virtualCameraPosition.X -= (float)Math.Cos(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                    virtualCameraPosition.Z += (float)Math.Sin(camera.RotationY) * cameraMovementSpeed * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
-                {
-                    virtualCameraPosition.Y += cameraMovementSpeed * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_E))
-                {
-                    virtualCameraPosition.Y -= cameraMovementSpeed * deltaTime;
+                    // camera rotation
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.RBUTTON))
+                    {
+                        cameraRotationY -= (currentMousePositionX - lastMousePositionX) * TurnSpeed * deltaTime;
+                    }
+                    location.RotationY = cameraRotationY;
+
+                    // camera position
+                    var requestedCameraMovementAmount = new Vector3();
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
+                    {
+                        requestedCameraMovementAmount -= location.Front;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
+                    {
+                        requestedCameraMovementAmount += location.Front;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
+                    {
+                        requestedCameraMovementAmount -= location.Right;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
+                    {
+                        requestedCameraMovementAmount += location.Right;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
+                    {
+                        requestedCameraMovementAmount -= location.Up;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_E))
+                    {
+                        requestedCameraMovementAmount += location.Up;
+                    }
+
+                    // apply camera movement
+                    var cameraMovementAmount = requestedCameraMovementAmount.Normalized() * cameraMovementSpeed * deltaTime;
+                    location.PositionX += cameraMovementAmount.X;
+                    location.PositionY += cameraMovementAmount.Y;
+                    location.PositionZ += cameraMovementAmount.Z;
                 }
 
                 // autoclicker
@@ -127,21 +151,6 @@ namespace TeardownCameraHack
                     _inputSimulator.Mouse.LeftButtonDown();
                 }
 
-                // camera rotation
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.RBUTTON))
-                {
-                    lastMousePositionX += (previousMousePositionX - input.MouseWindowPositionX) * TurnSpeed * deltaTime;
-                }
-                camera.RotationY = lastMousePositionX;
-                camera.PositionX = virtualCameraPosition.X * (float)Math.Cos(camera.RotationY) - virtualCameraPosition.Z * (float)Math.Sin(camera.RotationY);
-                camera.PositionY = virtualCameraPosition.Y;
-                camera.PositionZ = virtualCameraPosition.X * (float)Math.Sin(camera.RotationY) + virtualCameraPosition.Z * (float)Math.Cos(camera.RotationY);
-
-                // sync flashlight with camera
-                camera.Scene.FlashLight.PositionX = -virtualCameraPosition.X;
-                camera.Scene.FlashLight.PositionY = -virtualCameraPosition.Y;
-                camera.Scene.FlashLight.PositionZ = -virtualCameraPosition.Z;
-
                 // settings
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.UP))
                 {
@@ -151,8 +160,20 @@ namespace TeardownCameraHack
                 {
                     settings.FireSize -= FireSizeChangeAmount * deltaTime;
                 }
+                settings.FireSize = Math.Max(settings.FireSize, 0.0f);
 
-                // light color
+                // draw distance
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.OEM_MINUS))
+                {
+                    camera.DrawDistance += DrawDistanceChangeAmount * deltaTime;
+                }
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.OEM_PLUS))
+                {
+                    camera.DrawDistance -= DrawDistanceChangeAmount * deltaTime;
+                }
+                camera.DrawDistance = MathUtility.Clamp(camera.DrawDistance, -1.0f, -0.001f);
+
+                // flashlight color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
                     camera.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
@@ -185,7 +206,7 @@ namespace TeardownCameraHack
                     settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
                 }
 
-                previousMousePositionX = input.MouseWindowPositionX;
+                lastMousePositionX = currentMousePositionX;
             }
         }
     }

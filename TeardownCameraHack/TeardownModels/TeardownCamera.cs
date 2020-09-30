@@ -7,6 +7,18 @@ namespace TeardownCameraHack.TeardownModels
     {
         private readonly ulong _address;
 
+        public int ScreenWidth
+        {
+            get => Reader.Default.Read<int>(_address + 0x0, out _);
+            set => Writer.Default.Write(_address + 0x0, value);
+        }
+
+        public int ScreenHeight
+        {
+            get => Reader.Default.Read<int>(_address + 0x04, out _);
+            set => Writer.Default.Write(_address + 0x04, value);
+        }
+
         public bool IsFogEnabled
         {
             get => !Reader.Default.Read<bool>(_address + 0x1C, out _);
@@ -26,6 +38,12 @@ namespace TeardownCameraHack.TeardownModels
         {
             get => Reader.Default.Read<float>(_address + 0x14C, out _);
             set => Writer.Default.Write(_address + 0x14C, value);
+        }
+
+        public float Time
+        {
+            get => Reader.Default.Read<float>(_address + 0x150, out _);
+            set => Writer.Default.Write(_address + 0x150, value);
         }
 
         public float DrawDistance
@@ -90,6 +108,12 @@ namespace TeardownCameraHack.TeardownModels
         {
             get => Reader.Default.Read<float>(_address + 0x1D4, out _);
             set => Writer.Default.Write(_address + 0x1D4, value);
+        }
+
+        public float RotationX
+        {
+            get => Reader.Default.Read<float>(_address + 0x1D8, out _);
+            set => Writer.Default.Write(_address + 0x1D8, value);
         }
 
         public TeardownCamera(ulong address)
