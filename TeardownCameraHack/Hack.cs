@@ -76,6 +76,7 @@ namespace TeardownCameraHack
 
             var lastMousePositionX = input.MouseWindowPositionX;
             var cameraRotationY = 0.0f;
+            var projectileToggleFlag = false;
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -202,8 +203,20 @@ namespace TeardownCameraHack
                 // change projectile type
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_7))
                 {
-                    Console.Beep(500, 200); // HACK: utilize the beep to notify the player that the type changed, and to delay the keystrokes, preventing the types from cycling quickly -- replace this with a keypress/key-up check instead
-                    settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
+                    if (!projectileToggleFlag)
+                    {
+                        //var bulletTypeIndex = (((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length)
+                        var bulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
+                        Console.Clear();
+                        DisplayInstructions();
+                        Console.WriteLine($"\nCurrent bullet type: {(int)bulletType}-{bulletType}");
+                        settings.BulletType = bulletType;
+                    }
+                    projectileToggleFlag = true;
+                }
+                if (_inputSimulator.InputDeviceState.IsKeyUp(VirtualKeyCode.VK_7))
+                {
+                    projectileToggleFlag = false;
                 }
 
                 lastMousePositionX = currentMousePositionX;
