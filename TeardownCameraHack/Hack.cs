@@ -76,7 +76,12 @@ namespace TeardownCameraHack
 
             var lastMousePositionX = input.MouseWindowPositionX;
             var cameraRotationY = 0.0f;
+
+            bool? needsConsoleRedraw = null;
             var projectileToggleFlag = false;
+            var currentBulletType = TeardownProjectileType.RegularBullet;
+            var currentAutoClickerState = false;
+
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -145,7 +150,8 @@ namespace TeardownCameraHack
                 // autoclicker
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.CAPITAL))
                 {
-                    Console.Beep(700, 200);
+                    currentAutoClickerState = _inputSimulator.InputDeviceState.IsTogglingKeyInEffect(VirtualKeyCode.CAPITAL);
+                    needsConsoleRedraw = true;
                 }
                 if (_inputSimulator.InputDeviceState.IsTogglingKeyInEffect(VirtualKeyCode.CAPITAL) && _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.LBUTTON))
                 {
@@ -205,11 +211,9 @@ namespace TeardownCameraHack
                 {
                     if (!projectileToggleFlag)
                     {
-                        var bulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
-                        Console.Clear();
-                        DisplayInstructions();
-                        Console.WriteLine($"\nCurrent bullet type: {(int)bulletType}-{bulletType}");
-                        settings.BulletType = bulletType;
+                        currentBulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
+                        settings.BulletType = currentBulletType;
+                        needsConsoleRedraw = true;
                     }
                     projectileToggleFlag = true;
                 }
@@ -219,6 +223,16 @@ namespace TeardownCameraHack
                 }
 
                 lastMousePositionX = currentMousePositionX;
+
+                // Update Console States
+                if (needsConsoleRedraw ?? true)
+                {
+                    Console.Clear();
+                    DisplayInstructions();
+                    Console.WriteLine($"\nCurrent bullet type: {(int)currentBulletType}-{currentBulletType}");
+                    Console.WriteLine($"Autoclicker: {(currentAutoClickerState ? "On" : "Off")}");
+                    needsConsoleRedraw = false;
+                }
             }
         }
     }
