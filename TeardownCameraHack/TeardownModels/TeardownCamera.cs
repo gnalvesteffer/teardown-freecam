@@ -7,16 +7,43 @@ namespace TeardownCameraHack.TeardownModels
     {
         private readonly ulong _address;
 
+        public int ScreenWidth
+        {
+            get => Reader.Default.Read<int>(_address + 0x0, out _);
+            set => Writer.Default.Write(_address + 0x0, value);
+        }
+
+        public int ScreenHeight
+        {
+            get => Reader.Default.Read<int>(_address + 0x04, out _);
+            set => Writer.Default.Write(_address + 0x04, value);
+        }
+
         public bool IsFogEnabled
         {
             get => !Reader.Default.Read<bool>(_address + 0x1C, out _);
             set => Writer.Default.Write(_address + 0x1C, !value);
         }
 
+        public TeardownScene Scene
+        {
+            get
+            {
+                var sceneAddress = Reader.Default.Read<ulong>(_address + 0x40, out _);
+                return new TeardownScene(sceneAddress);
+            }
+        }
+
         public float LifeTime
         {
             get => Reader.Default.Read<float>(_address + 0x14C, out _);
             set => Writer.Default.Write(_address + 0x14C, value);
+        }
+
+        public float Time
+        {
+            get => Reader.Default.Read<float>(_address + 0x150, out _);
+            set => Writer.Default.Write(_address + 0x150, value);
         }
 
         public float DrawDistance
@@ -45,6 +72,7 @@ namespace TeardownCameraHack.TeardownModels
         }
 
         private float _rotationY;
+
         public float RotationY
         {
             get => _rotationY;
@@ -82,9 +110,15 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x1D4, value);
         }
 
-        public TeardownCamera(ulong pointer)
+        public float RotationX
         {
-            _address = Reader.Default.Read<ulong>(pointer, out _);
+            get => Reader.Default.Read<float>(_address + 0x1D8, out _);
+            set => Writer.Default.Write(_address + 0x1D8, value);
+        }
+
+        public TeardownCamera(ulong address)
+        {
+            _address = Reader.Default.Read<ulong>(address, out _);
         }
     }
 }

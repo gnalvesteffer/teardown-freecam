@@ -1,0 +1,16 @@
+// camera
+camera+0x160 // total bodies
+camera+0x164 // body array size
+camera+0x168 // body array
+
+camera+0x170 // total shapes
+camera+0x174 // shape array size
+camera+0x178 // shape array
+
+camera+0x180 // total lights
+camera+0x184 // light array size
+camera+0x188 // light array
+
+camera+0x1D0 // total vehicles
+camera+0x1D4 // vehicle array size
+camera+0x1D8 // vehicle array

@@ -87,14 +87,19 @@
         <Compile Include="TeardownModels\TeardownCamera.cs" />
         <Compile Include="TeardownModels\TeardownInput.cs" />
         <Compile Include="TeardownModels\TeardownLight.cs" />
+        <Compile Include="TeardownModels\TeardownLocation.cs" />
         <Compile Include="TeardownModels\TeardownProjectile.cs" />
         <Compile Include="TeardownModels\TeardownProjectileType.cs" />
         <Compile Include="TeardownModels\TeardownScene.cs" />
         <Compile Include="TeardownModels\TeardownSettings.cs" />
         <Compile Include="TeardownModels\TeardownVehicle.cs" />
+        <Compile Include="Utilities\MathUtility.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Docs\structures.txt" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

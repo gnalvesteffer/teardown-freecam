@@ -47,6 +47,33 @@ namespace TeardownCameraHack.TeardownModels
             }
         }
 
+        public int TotalLocations
+        {
+            get => Reader.Default.Read<int>(_address + 0x190, out _);
+            set => Writer.Default.Write(_address + 0x190, value);
+        }
+
+        public int LocationArraySize
+        {
+            get => Reader.Default.Read<int>(_address + 0x194, out _);
+            set => Writer.Default.Write(_address + 0x194, value);
+        }
+
+        public TeardownLocation[] Locations
+        {
+            get
+            {
+                var totalLocations = TotalLocations;
+                var locations = new TeardownLocation[totalLocations];
+                var locationArrayAddress = Reader.Default.Read<ulong>(_address + 0x198, out _);
+                for (var locationIndex = 0; locationIndex < totalLocations; ++locationIndex)
+                {
+                    locations[locationIndex] = new TeardownLocation(Reader.Default.Read<ulong>(locationArrayAddress + (ulong)(locationIndex * 0x08), out _));
+                }
+                return locations;
+            }
+        }
+
         public TeardownScene(ulong address)
         {
             _address = address;
