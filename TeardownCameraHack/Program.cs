@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace TeardownCameraHack
 {
@@ -8,17 +9,15 @@ namespace TeardownCameraHack
     {
         public static void Main(string[] args)
         {
-            var teardownProcess = Process.GetProcessesByName("teardown-perftest").FirstOrDefault();
-            if (teardownProcess != null)
+            Console.WriteLine("Waiting for Teardown Performance Test...");
+            var teardownProcess = (Process)null;
+            while (teardownProcess == null)
             {
-                new Hack(teardownProcess).Start();
+                teardownProcess = Process.GetProcessesByName("teardown-perftest").FirstOrDefault();
+                Thread.Sleep(1000);
             }
-            else
-            {
-                Console.WriteLine("Could not find Teardown Performance Test.");
-                Console.WriteLine("Run the game first, and then run this hack.");
-                throw new Exception("Failed to find Teardown process.");
-            }
+            Console.Clear();
+            new Hack(teardownProcess).Start();
         }
     }
 }
