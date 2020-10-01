@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
@@ -32,9 +33,25 @@ namespace TeardownCameraHack
 
         public void Start()
         {
+            WaitUntilGameIsReady();
             DisplayInstructions();
             ApplyPatches();
             MainLoop();
+        }
+
+        private void WaitUntilGameIsReady()
+        {
+            Console.WriteLine("Waiting for level to load...");
+            var game = new TeardownGame(_teardownBaseAddress + 0x003E2528);
+            while (true)
+            {
+                if (game.ActualTime > 0.0f && (int)game.State == (int)TeardownGameState.Level)
+                {
+                    break;
+                }
+                Thread.Sleep(1000);
+            }
+            Console.Clear();
         }
 
         private void DisplayInstructions()
@@ -48,7 +65,6 @@ namespace TeardownCameraHack
             Console.WriteLine("Up/Down arrows to change fire size, and Shift+Down to reset fire size.");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
-            Console.WriteLine("-,+ to change the draw distance.");
             Console.WriteLine("Capslock to toggle autoclicker.");
         }
 
@@ -56,23 +72,13 @@ namespace TeardownCameraHack
         {
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x1F2533, new byte[] { 0xEB }); // prevent mission from ending after 60 seconds
             Writer.Default.WriteBytes(_teardownBaseAddress + 0x1F2798, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // allow player to shoot after 60 seconds
-            Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E734, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent draw distance assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E750, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera position assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E73C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x2E74C, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent camera rotation assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0x312D1, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // pause time
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent light position assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent light position assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC69C2, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent light rotation assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
-            // Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
         }
 
         private void MainLoop()
         {
             var settings = new TeardownSettings(_teardownBaseAddress);
             var input = new TeardownInput(Reader.Default.Read<ulong>(_teardownBaseAddress + 0x3E8E10, out _));
-            var camera = new TeardownCamera(_teardownBaseAddress + 0x003E2528);
+            var game = new TeardownGame(_teardownBaseAddress + 0x003E2528);
 
             var lastMousePositionX = input.MouseWindowPositionX;
             var cameraRotationY = 0.0f;
@@ -86,22 +92,22 @@ namespace TeardownCameraHack
                 }
                 stopwatch.Restart();
 
-                if (camera.GameState != TeardownGameState.Level)
+                if (game.State != TeardownGameState.Level)
                 {
                     continue;
                 }
 
-                if (camera.Time < 60.0f) // skip to end of level so that the last location of the camera path is always attempting to be reached
+                if (game.SimulationTime < 60.0f) // skip to end of level so that the last location of the camera path is always attempting to be reached
                 {
-                    camera.Time = 60.0f;
+                    game.SimulationTime = 60.0f;
                 }
 
                 var shouldUseFastCameraSpeed = _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT);
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
                 var currentMousePositionX = input.MouseWindowPositionX;
 
-                var location = camera.Scene.Locations.Length >= 2
-                    ? camera.Scene.Locations[camera.Scene.Locations.Length - 2]
+                var location = game.Scene.Locations.Length >= 2
+                    ? game.Scene.Locations[game.Scene.Locations.Length - 2]
                     : null;
                 if (location != null)
                 {
@@ -166,6 +172,7 @@ namespace TeardownCameraHack
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT))
                     {
                         settings.FireSize = 0.4f;
+                        Console.Beep(400, 200);
                     }
                     else
                     {
@@ -174,41 +181,30 @@ namespace TeardownCameraHack
                 }
                 settings.FireSize = Math.Max(settings.FireSize, 0.0f);
 
-                // draw distance
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.OEM_MINUS))
-                {
-                    camera.DrawDistance += DrawDistanceChangeAmount * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.OEM_PLUS))
-                {
-                    camera.DrawDistance -= DrawDistanceChangeAmount * deltaTime;
-                }
-                camera.DrawDistance = MathUtility.Clamp(camera.DrawDistance, -1.0f, -0.001f);
-
                 // flashlight color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
                 {
-                    camera.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
                 {
-                    camera.Scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
                 {
-                    camera.Scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
                 {
-                    camera.Scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
                 {
-                    camera.Scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
                 {
-                    camera.Scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
+                    game.Scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
                 }
 
                 // change projectile type

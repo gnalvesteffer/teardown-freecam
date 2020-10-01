@@ -3,7 +3,7 @@ using Squalr.Engine.Memory;
 
 namespace TeardownCameraHack.TeardownModels
 {
-    public class TeardownCamera
+    public class TeardownGame
     {
         private readonly ulong _address;
 
@@ -19,11 +19,13 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x04, value);
         }
 
-        public TeardownGameState GameState
+        public TeardownGameState State
         {
             get => (TeardownGameState)Reader.Default.Read<int>(_address + 0x08, out _);
             set => Writer.Default.Write(_address + 0x08, (int)value);
         }
+
+        public bool IsGameLoading => Reader.Default.Read<int>(_address + 0x0C, out _) > 0;
 
         public bool IsFogEnabled
         {
@@ -40,13 +42,13 @@ namespace TeardownCameraHack.TeardownModels
             }
         }
 
-        public float LifeTime
+        public float ActualTime
         {
             get => Reader.Default.Read<float>(_address + 0x14C, out _);
             set => Writer.Default.Write(_address + 0x14C, value);
         }
 
-        public float Time
+        public float SimulationTime
         {
             get => Reader.Default.Read<float>(_address + 0x150, out _);
             set => Writer.Default.Write(_address + 0x150, value);
@@ -59,70 +61,70 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x1AC, value);
         }
 
-        public float PositionX
+        public float CameraPositionX
         {
             get => Reader.Default.Read<float>(_address + 0x1E4, out _);
             set => Writer.Default.Write(_address + 0x1E4, value);
         }
 
-        public float PositionY
+        public float CameraPositionY
         {
             get => Reader.Default.Read<float>(_address + 0x1E8, out _);
             set => Writer.Default.Write(_address + 0x1E8, value);
         }
 
-        public float PositionZ
+        public float CameraPositionZ
         {
             get => Reader.Default.Read<float>(_address + 0x1EC, out _);
             set => Writer.Default.Write(_address + 0x1EC, value);
         }
 
-        private float _rotationY;
+        private float _cameraRotationY;
 
-        public float RotationY
+        public float CameraRotationY
         {
-            get => _rotationY;
+            get => _cameraRotationY;
             set
             {
-                _rotationY = value;
-                Rotation1 = (float)Math.Cos(_rotationY);
-                Rotation2 = Rotation1;
-                Rotation3 = (float)Math.Sin(_rotationY);
-                Rotation4 = -Rotation3;
+                _cameraRotationY = value;
+                CameraRotation1 = (float)Math.Cos(_cameraRotationY);
+                CameraRotation2 = CameraRotation1;
+                CameraRotation3 = (float)Math.Sin(_cameraRotationY);
+                CameraRotation4 = -CameraRotation3;
             }
         }
 
-        public float Rotation1
+        public float CameraRotation1
         {
             get => Reader.Default.Read<float>(_address + 0x1B4, out _);
             set => Writer.Default.Write(_address + 0x1B4, value);
         }
 
-        public float Rotation2
+        public float CameraRotation2
         {
             get => Reader.Default.Read<float>(_address + 0x1DC, out _);
             set => Writer.Default.Write(_address + 0x1DC, value);
         }
 
-        public float Rotation3
+        public float CameraRotation3
         {
             get => Reader.Default.Read<float>(_address + 0x1BC, out _);
             set => Writer.Default.Write(_address + 0x1BC, value);
         }
 
-        public float Rotation4
+        public float CameraRotation4
         {
             get => Reader.Default.Read<float>(_address + 0x1D4, out _);
             set => Writer.Default.Write(_address + 0x1D4, value);
         }
 
-        public float RotationX
+        public float CameraRotationX
         {
             get => Reader.Default.Read<float>(_address + 0x1D8, out _);
             set => Writer.Default.Write(_address + 0x1D8, value);
         }
 
-        public TeardownCamera(ulong address)
+        public TeardownGame(ulong address)
         {
             _address = Reader.Default.Read<ulong>(address, out _);
         }
