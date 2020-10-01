@@ -81,6 +81,8 @@ namespace TeardownCameraHack
             var game = new TeardownGame(_teardownBaseAddress + 0x003E2528);
 
             var lastMousePositionX = input.MouseWindowPositionX;
+            var lastMousePositionY = input.MouseWindowPositionY;
+            var cameraRotationX = 0.0f;
             var cameraRotationY = 0.0f;
             var stopwatch = Stopwatch.StartNew();
             while (true)
@@ -92,6 +94,10 @@ namespace TeardownCameraHack
                 }
                 stopwatch.Restart();
 
+                if (Processes.Default.OpenedProcess.HasExited)
+                {
+                    break;
+                }
                 if (game.State != TeardownGameState.Level)
                 {
                     continue;
@@ -105,6 +111,7 @@ namespace TeardownCameraHack
                 var shouldUseFastCameraSpeed = _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT);
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
                 var currentMousePositionX = input.MouseWindowPositionX;
+                var currentMousePositionY = input.MouseWindowPositionY;
 
                 var location = game.Scene.Locations.Length >= 2
                     ? game.Scene.Locations[game.Scene.Locations.Length - 2]
@@ -114,15 +121,17 @@ namespace TeardownCameraHack
                     // camera rotation
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.RBUTTON))
                     {
+                        cameraRotationX += (currentMousePositionY - lastMousePositionY) * TurnSpeed * deltaTime;
                         cameraRotationY -= (currentMousePositionX - lastMousePositionX) * TurnSpeed * deltaTime;
                     }
+                    location.RotationX = cameraRotationX;
                     location.RotationY = cameraRotationY;
 
                     // camera position
                     var requestedCameraMovementAmount = new Vector3();
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_S))
                     {
-                        requestedCameraMovementAmount -= location.Front;
+                        requestedCameraMovementAmount += location.Back;
                     }
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_W))
                     {
@@ -130,7 +139,7 @@ namespace TeardownCameraHack
                     }
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_A))
                     {
-                        requestedCameraMovementAmount -= location.Right;
+                        requestedCameraMovementAmount += location.Left;
                     }
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_D))
                     {
@@ -138,7 +147,7 @@ namespace TeardownCameraHack
                     }
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_Q))
                     {
-                        requestedCameraMovementAmount -= location.Up;
+                        requestedCameraMovementAmount += location.Down;
                     }
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_E))
                     {
@@ -215,6 +224,7 @@ namespace TeardownCameraHack
                 }
 
                 lastMousePositionX = currentMousePositionX;
+                lastMousePositionY = currentMousePositionY;
             }
         }
     }

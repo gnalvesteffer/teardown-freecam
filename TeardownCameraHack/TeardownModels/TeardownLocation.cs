@@ -33,11 +33,15 @@ namespace TeardownCameraHack.TeardownModels
             -(float)Math.Sin(RotationY + Math.PI / 2)
         );
 
+        public Vector3 Back => -Front;
+
         public Vector3 Right => new Vector3(
             (float)Math.Cos(RotationY),
             0.0f,
             (float)Math.Sin(RotationY)
         );
+
+        public Vector3 Left => -Right;
 
         public Vector3 Up => new Vector3(
             0.0f,
@@ -45,14 +49,25 @@ namespace TeardownCameraHack.TeardownModels
             0.0f
         );
 
-        public float RotationY
+        public Vector3 Down => -Up;
+
+        public float RotationX
         {
-            get { return MathUtility.WrapAngle((float)Math.Atan2(Rotation4, Rotation2) * 2.0f); }
+            get => MathUtility.WrapAngle((float)Math.Atan2(Rotation3, Rotation1) * 2.0f);
             set
             {
-                Rotation1 = 0.0f;
+                // ToDo: figure out rotation calculations
+                // Rotation1 = value;
+                // Rotation3 = value;
+            }
+        }
+
+        public float RotationY
+        {
+            get => MathUtility.WrapAngle((float)Math.Atan2(Rotation4, Rotation2) * 2.0f);
+            set
+            {
                 Rotation2 = (float)Math.Sin(value);
-                Rotation3 = 0.0f;
                 Rotation4 = (float)Math.Cos(value);
             }
         }
