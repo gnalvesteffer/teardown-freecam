@@ -25,7 +25,11 @@ namespace TeardownCameraHack.TeardownModels
             set => Writer.Default.Write(_address + 0x08, (int)value);
         }
 
-        public bool IsGameLoading => Reader.Default.Read<int>(_address + 0x0C, out _) > 0;
+        public TeardownGameState NextState
+        {
+            get => (TeardownGameState)Reader.Default.Read<int>(_address + 0x0C, out _);
+            set => Writer.Default.Write(_address + 0x0C, (int)value);
+        }
 
         public bool IsFogEnabled
         {

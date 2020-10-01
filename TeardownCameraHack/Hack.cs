@@ -66,6 +66,7 @@ namespace TeardownCameraHack
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
             Console.WriteLine("Capslock to toggle autoclicker.");
+            Console.WriteLine("CTRL+R to restart level.");
         }
 
         private void ApplyPatches()
@@ -169,6 +170,13 @@ namespace TeardownCameraHack
                 if (_inputSimulator.InputDeviceState.IsTogglingKeyInEffect(VirtualKeyCode.CAPITAL) && _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.LBUTTON))
                 {
                     _inputSimulator.Mouse.LeftButtonDown();
+                }
+
+                // restart level
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.CONTROL) && _inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_R))
+                {
+                    game.NextState = TeardownGameState.Level;
+                    Console.Beep(900, 200);
                 }
 
                 // settings
