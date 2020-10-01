@@ -63,6 +63,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Use WASD/QE/Shift to move.");
             Console.WriteLine("Click and drag the Right Mouse Button to turn.");
             Console.WriteLine("Up/Down arrows to change fire size, and Shift+Down to reset fire size.");
+            Console.WriteLine("Delete to remove all fires");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
             Console.WriteLine("Capslock to toggle autoclicker.");
@@ -197,6 +198,13 @@ namespace TeardownCameraHack
                     }
                 }
                 settings.FireSize = Math.Max(settings.FireSize, 0.0f);
+
+                // delete all fires
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.DELETE))
+                {
+                    game.Scene.FireSystem.TotalFires = 0;
+                    Console.Beep(600, 200);
+                }
 
                 // flashlight color
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))

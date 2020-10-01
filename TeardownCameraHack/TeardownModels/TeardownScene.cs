@@ -6,18 +6,14 @@ namespace TeardownCameraHack.TeardownModels
     {
         private readonly ulong _address;
 
-        private TeardownLight _light;
+        public TeardownFireSystem FireSystem
+        {
+            get => new TeardownFireSystem(Reader.Default.Read<ulong>(_address + 0xA8, out _));
+        }
 
         public TeardownLight FlashLight
         {
-            get
-            {
-                if (_light != null)
-                {
-                    return _light;
-                }
-                return _light = new TeardownLight(Reader.Default.Read<ulong>(_address + 0xE8, out _));
-            }
+            get => new TeardownLight(Reader.Default.Read<ulong>(_address + 0xE8, out _));
         }
 
         public int TotalProjectiles
