@@ -45,7 +45,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Controls:");
             Console.WriteLine("Use WASD/QE/Shift to move.");
             Console.WriteLine("Click and drag the Right Mouse Button to turn.");
-            Console.WriteLine("Up/Down arrows to change fire size.");
+            Console.WriteLine("Up/Down arrows to change fire size, and Shift+Down to reset fire size.");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
             Console.WriteLine("-,+ to change the draw distance.");
@@ -86,6 +86,11 @@ namespace TeardownCameraHack
                 }
                 stopwatch.Restart();
 
+                if (camera.GameState != TeardownGameState.Level)
+                {
+                    continue;
+                }
+
                 if (camera.Time < 60.0f) // skip to end of level so that the last location of the camera path is always attempting to be reached
                 {
                     camera.Time = 60.0f;
@@ -95,7 +100,7 @@ namespace TeardownCameraHack
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
                 var currentMousePositionX = input.MouseWindowPositionX;
 
-                var location = camera.Scene.Locations.Length > 0
+                var location = camera.Scene.Locations.Length >= 2
                     ? camera.Scene.Locations[camera.Scene.Locations.Length - 2]
                     : null;
                 if (location != null)
@@ -158,7 +163,14 @@ namespace TeardownCameraHack
                 }
                 if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.DOWN))
                 {
-                    settings.FireSize -= FireSizeChangeAmount * deltaTime;
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT))
+                    {
+                        settings.FireSize = 0.4f;
+                    }
+                    else
+                    {
+                        settings.FireSize -= FireSizeChangeAmount * deltaTime;
+                    }
                 }
                 settings.FireSize = Math.Max(settings.FireSize, 0.0f);
 
