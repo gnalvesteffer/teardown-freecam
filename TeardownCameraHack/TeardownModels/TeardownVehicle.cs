@@ -14,8 +14,8 @@ namespace TeardownCameraHack.TeardownModels
 
         public bool IsPlayerControlled
         {
-            get => Reader.Default.Read<bool>(_address + 0xDC, out _);
-            set => Writer.Default.Write(_address + 0xDC, value);
+            get => Reader.Default.Read<int>(_address + 0xDC, out _) > 0;
+            set => Writer.Default.Write(_address + 0xDC, value ? 1 : 0);
         }
 
         public TeardownVehicle(ulong address)
