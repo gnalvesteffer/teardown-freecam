@@ -19,7 +19,6 @@ namespace TeardownCameraHack
         private static readonly float TurnSpeed = (float)Math.PI * 0.05f;
         private static readonly float LightColorChangeAmount = 25.0f;
         private static readonly float FireSizeChangeAmount = 1.0f;
-        private static readonly float DrawDistanceChangeAmount = 0.1f;
 
         private readonly InputSimulator _inputSimulator;
         private readonly ulong _teardownBaseAddress;
