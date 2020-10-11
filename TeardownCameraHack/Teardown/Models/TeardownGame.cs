@@ -1,7 +1,7 @@
 using System;
 using Squalr.Engine.Memory;
 
-namespace TeardownCameraHack.TeardownModels
+namespace TeardownCameraHack.Teardown.Models
 {
     public class TeardownGame
     {
@@ -33,8 +33,8 @@ namespace TeardownCameraHack.TeardownModels
 
         public bool IsFogEnabled
         {
-            get => !Reader.Default.Read<bool>(_address + 0x1C, out _);
-            set => Writer.Default.Write(_address + 0x1C, !value);
+            get => Reader.Default.Read<byte>(_address + 0x1C, out _) == 0;
+            set => Writer.Default.Write(_address + 0x1C, value ? 0 : 1);
         }
 
         public TeardownScene Scene
@@ -44,6 +44,27 @@ namespace TeardownCameraHack.TeardownModels
                 var sceneAddress = Reader.Default.Read<ulong>(_address + 0x40, out _);
                 return new TeardownScene(sceneAddress);
             }
+        }
+
+        public TeardownScriptingEngine ScriptingEngine
+        {
+            get
+            {
+                var address = Reader.Default.Read<ulong>(_address + 0xA8, out _);
+                return new TeardownScriptingEngine(address);
+            }
+        }
+
+        public string LevelName
+        {
+            get => Reader.Default.Read<string>(_address + 0x108, out _);
+            set => Writer.Default.Write(_address + 0x108, value);
+        }
+
+        public float SimulationTimeStep
+        {
+            get => Reader.Default.Read<float>(_address + 0x144, out _);
+            set => Writer.Default.Write(_address + 0x144, value);
         }
 
         public float ActualTime

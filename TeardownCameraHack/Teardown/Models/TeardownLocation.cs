@@ -3,7 +3,7 @@ using System.Numerics;
 using Squalr.Engine.Memory;
 using TeardownCameraHack.Utilities;
 
-namespace TeardownCameraHack.TeardownModels
+namespace TeardownCameraHack.Teardown.Models
 {
     public class TeardownLocation
     {

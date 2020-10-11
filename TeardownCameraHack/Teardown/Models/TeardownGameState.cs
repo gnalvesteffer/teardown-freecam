@@ -1,4 +1,4 @@
-namespace TeardownCameraHack.TeardownModels
+namespace TeardownCameraHack.Teardown.Models
 {
     public enum TeardownGameState
     {

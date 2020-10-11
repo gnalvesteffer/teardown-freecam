@@ -6,7 +6,7 @@ using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
 using Squalr.Engine.OS;
-using TeardownCameraHack.TeardownModels;
+using TeardownCameraHack.Teardown.Models;
 using TeardownCameraHack.Utilities;
 
 namespace TeardownCameraHack
@@ -65,6 +65,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Delete to remove all fires");
             Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("7 to change the projectile type.");
+            Console.WriteLine("0 to toggle fog.");
             Console.WriteLine("Capslock to toggle autoclicker.");
             Console.WriteLine("CTRL+R to restart level.");
         }
@@ -177,6 +178,13 @@ namespace TeardownCameraHack
                 {
                     game.NextState = TeardownGameState.Level;
                     Console.Beep(900, 200);
+                }
+
+                // toggle fog
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_0))
+                {
+                    game.IsFogEnabled = !game.IsFogEnabled;
+                    Console.Beep(700, 200);
                 }
 
                 // settings

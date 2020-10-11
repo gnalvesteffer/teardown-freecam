@@ -8,3 +8,4 @@ Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x9
 Writer.Default.WriteBytes(_teardownBaseAddress + 0xC69C2, new byte[] { 0x90, 0x90, 0x90, 0x90 }); // prevent light rotation assignment
 Writer.Default.WriteBytes(_teardownBaseAddress + 0xC6989, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent player position assignment
 Writer.Default.WriteBytes(_teardownBaseAddress + 0xC698E, new byte[] { 0x90, 0x90, 0x90 }); // prevent player position assignment
+Writer.Default.WriteBytes(_teardownBaseAddress + 0x2ED46, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 }); // prevent simulation time step assignment

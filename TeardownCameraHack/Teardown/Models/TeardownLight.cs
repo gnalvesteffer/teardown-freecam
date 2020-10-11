@@ -1,6 +1,6 @@
 using Squalr.Engine.Memory;
 
-namespace TeardownCameraHack.TeardownModels
+namespace TeardownCameraHack.Teardown.Models
 {
     public class TeardownLight
     {

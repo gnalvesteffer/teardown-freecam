@@ -40,6 +40,10 @@
           <HintPath>..\packages\Squalr.Engine.2.3.0.1\lib\netstandard2.0\Squalr.Engine.dll</HintPath>
           <Private>True</Private>
         </Reference>
+        <Reference Include="Squalr.Engine.Architecture, Version=2.3.0.1, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\Squalr.Engine.Architecture.2.3.0.1\lib\netstandard2.0\Squalr.Engine.Architecture.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="Squalr.Engine.Memory, Version=2.3.0.1, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\packages\Squalr.Engine.Memory.2.3.0.1\lib\netstandard2.0\Squalr.Engine.Memory.dll</HintPath>
           <Private>True</Private>
@@ -84,17 +88,21 @@
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Hack.cs" />
-        <Compile Include="TeardownModels\TeardownFireSystem.cs" />
-        <Compile Include="TeardownModels\TeardownGame.cs" />
-        <Compile Include="TeardownModels\TeardownGameState.cs" />
-        <Compile Include="TeardownModels\TeardownInput.cs" />
-        <Compile Include="TeardownModels\TeardownLight.cs" />
-        <Compile Include="TeardownModels\TeardownLocation.cs" />
-        <Compile Include="TeardownModels\TeardownProjectile.cs" />
-        <Compile Include="TeardownModels\TeardownProjectileType.cs" />
-        <Compile Include="TeardownModels\TeardownScene.cs" />
-        <Compile Include="TeardownModels\TeardownSettings.cs" />
-        <Compile Include="TeardownModels\TeardownVehicle.cs" />
+        <Compile Include="Teardown\Models\TeardownFireSystem.cs" />
+        <Compile Include="Teardown\Models\TeardownGame.cs" />
+        <Compile Include="Teardown\Models\TeardownGameState.cs" />
+        <Compile Include="Teardown\Models\TeardownInput.cs" />
+        <Compile Include="Teardown\Models\TeardownLight.cs" />
+        <Compile Include="Teardown\Models\TeardownLocation.cs" />
+        <Compile Include="Teardown\Models\TeardownProjectile.cs" />
+        <Compile Include="Teardown\Models\TeardownProjectileType.cs" />
+        <Compile Include="Teardown\Models\TeardownScene.cs" />
+        <Compile Include="Teardown\Models\TeardownScriptingEngine.cs" />
+        <Compile Include="Teardown\Models\TeardownSettings.cs" />
+        <Compile Include="Teardown\Models\TeardownVehicle.cs" />
+        <Compile Include="Teardown\TeardownApi.cs" />
+        <Compile Include="Utilities\AssemblyUtility.cs" />
+        <Compile Include="Utilities\Kernel32.cs" />
         <Compile Include="Utilities\MathUtility.cs" />
     </ItemGroup>
     <ItemGroup>
@@ -103,6 +111,18 @@
     <ItemGroup>
       <Content Include="Docs\disabled-patches.txt" />
       <Content Include="Docs\structures.txt" />
+      <Content Include="Library\fasm.exe">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Library\ml.exe">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Library\ml64.exe">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Library\nasm.exe">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
