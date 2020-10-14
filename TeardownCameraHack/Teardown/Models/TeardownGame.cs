@@ -158,19 +158,19 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_address + 0x1D8, value);
         }
 
-        public int Sensitivity
+        public int InputSensitivity
         {
             get => Reader.Default.Read<int>(_address + 0x2C8, out _);
             set => Writer.Default.Write(_address + 0x2C8, value);
         }
 
-        public int Smoothing
+        public int InputSmoothing
         {
             get => Reader.Default.Read<int>(_address + 0x2C4, out _);
             set => Writer.Default.Write(_address + 0x2C4, value);
         }
 
-        public int HeadBob
+        public int HeadBobAmount
         {
             get => Reader.Default.Read<int>(_address + 0x2D0, out _);
             set => Writer.Default.Write(_address + 0x2D0, value);

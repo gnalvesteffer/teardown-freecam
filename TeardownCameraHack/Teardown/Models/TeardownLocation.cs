@@ -28,10 +28,9 @@ namespace TeardownCameraHack.Teardown.Models
         }
 
         public Vector3 Front => new Vector3(
-          (float)Math.Cos(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch),
-          //0.0f,
-          -(float)Math.Sin(Pitch),
-          (float)Math.Sin(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch)
+            (float)Math.Cos(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch),
+            -(float)Math.Sin(Pitch),
+            (float)Math.Sin(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch)
         );
 
         public Vector3 Back => -Front;
