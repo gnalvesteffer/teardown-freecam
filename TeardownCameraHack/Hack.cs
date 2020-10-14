@@ -17,7 +17,7 @@ namespace TeardownCameraHack
         private static readonly float TickRate = 1.0f / 60.0f;
         private static readonly float NormalCameraSpeed = 5.0f;
         private static readonly float FastCameraSpeed = 25.0f;
-        private static readonly float TurnSpeed = (float)Math.PI * 0.05f;
+        //private static readonly float TurnSpeed = (float)Math.PI * 0.05f;
         private static readonly float LightColorChangeAmount = 25.0f;
         private static readonly float FireSizeChangeAmount = 1.0f;
 
@@ -115,6 +115,7 @@ namespace TeardownCameraHack
                 var cameraMovementSpeed = shouldUseFastCameraSpeed ? FastCameraSpeed : NormalCameraSpeed;
                 var currentMousePositionX = input.MouseWindowPositionX;
                 var currentMousePositionY = input.MouseWindowPositionY;
+                var cameraSensitivity = game.Sensitivity * 0.001f * (float)Math.PI;
 
                 var location = game.Scene.Locations.Length >= 2
                     ? game.Scene.Locations[game.Scene.Locations.Length - 2]
@@ -124,8 +125,8 @@ namespace TeardownCameraHack
                     // camera rotation
                     if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.RBUTTON))
                     {
-                        cameraRotationX += (currentMousePositionY - lastMousePositionY) * TurnSpeed * deltaTime;
-                        cameraRotationY -= (currentMousePositionX - lastMousePositionX) * TurnSpeed * deltaTime;
+                        cameraRotationX += (currentMousePositionY - lastMousePositionY) * cameraSensitivity * deltaTime;
+                        cameraRotationY -= (currentMousePositionX - lastMousePositionX) * cameraSensitivity * deltaTime;
                     }
                     location.Frame =
                         Quaternion.CreateFromAxisAngle(location.Left, cameraRotationX) *
