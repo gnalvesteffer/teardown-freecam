@@ -41,8 +41,17 @@ namespace TeardownCameraHack.Teardown.Models
         {
             get
             {
-                var sceneAddress = Reader.Default.Read<ulong>(_address + 0x40, out _);
-                return new TeardownScene(sceneAddress);
+                var address = Reader.Default.Read<ulong>(_address + 0x40, out _);
+                return new TeardownScene(address);
+            }
+        }
+
+        public TeardownHud IngameHud
+        {
+            get
+            {
+                var address = Reader.Default.Read<ulong>(_address + 0x78, out _);
+                return new TeardownHud(address);
             }
         }
 

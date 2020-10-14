@@ -91,6 +91,7 @@
         <Compile Include="Teardown\Models\TeardownFireSystem.cs" />
         <Compile Include="Teardown\Models\TeardownGame.cs" />
         <Compile Include="Teardown\Models\TeardownGameState.cs" />
+        <Compile Include="Teardown\Models\TeardownHud.cs" />
         <Compile Include="Teardown\Models\TeardownInput.cs" />
         <Compile Include="Teardown\Models\TeardownLight.cs" />
         <Compile Include="Teardown\Models\TeardownLocation.cs" />

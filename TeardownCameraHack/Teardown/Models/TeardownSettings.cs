@@ -30,7 +30,7 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_teardownBaseAddress + 0x2F2BAC, value);
         }
 
-        public TeardownProjectileType BulletType
+        public TeardownProjectileType ProjectileType
         {
             get => (TeardownProjectileType)Reader.Default.Read<byte>(_teardownBaseAddress + 0x1F2A24, out _);
             set => Writer.Default.Write(_teardownBaseAddress + 0x1F2A24, (byte)value);

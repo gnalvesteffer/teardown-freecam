@@ -6,6 +6,7 @@ using WindowsInput;
 using WindowsInput.Native;
 using Squalr.Engine.Memory;
 using Squalr.Engine.OS;
+using TeardownCameraHack.Teardown;
 using TeardownCameraHack.Teardown.Models;
 using TeardownCameraHack.Utilities;
 
@@ -56,15 +57,15 @@ namespace TeardownCameraHack
         private void DisplayInstructions()
         {
             Console.WriteLine("Teardown Camera Hack by Xorberax");
-            Console.WriteLine("Special thanks to Danyadd and TheOwlOfLife for their contributions!");
+            Console.WriteLine("Special thanks to the Teardown community for all of their support.");
             Console.WriteLine();
             Console.WriteLine("Controls:");
             Console.WriteLine("Use WASD/QE/Shift to move.");
-            Console.WriteLine("Click and drag the Right Mouse Button to turn.");
+            Console.WriteLine("Click and drag the Right Mouse Button to look around.");
             Console.WriteLine("Up/Down arrows to change fire size, and Shift+Down to reset fire size.");
             Console.WriteLine("Delete to remove all fires");
-            Console.WriteLine("1,2,3,4,5,6 to change the flashlight color.");
-            Console.WriteLine("7 to change the projectile type.");
+            Console.WriteLine("1,2,3,4,5,6 to change the projectile type.");
+            Console.WriteLine("SHIFT + 1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("0 to toggle fog.");
             Console.WriteLine("Capslock to toggle autoclicker.");
             Console.WriteLine("CTRL+R to restart level.");
@@ -126,8 +127,9 @@ namespace TeardownCameraHack
                         cameraRotationX += (currentMousePositionY - lastMousePositionY) * TurnSpeed * deltaTime;
                         cameraRotationY -= (currentMousePositionX - lastMousePositionX) * TurnSpeed * deltaTime;
                     }
-                    location.RotationX = cameraRotationX;
-                    location.RotationY = cameraRotationY;
+                    location.Frame =
+                        Quaternion.CreateFromAxisAngle(location.Left, cameraRotationX) *
+                        Quaternion.CreateFromAxisAngle(location.Up, cameraRotationY);
 
                     // camera position
                     var requestedCameraMovementAmount = new Vector3();
@@ -214,36 +216,65 @@ namespace TeardownCameraHack
                 }
 
                 // flashlight color
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
+                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.SHIFT))
                 {
-                    game.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
+                    {
+                        game.Scene.FlashLight.Red -= LightColorChangeAmount * deltaTime;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
+                    {
+                        game.Scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
+                    {
+                        game.Scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
+                    {
+                        game.Scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
+                    {
+                        game.Scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
+                    {
+                        game.Scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
+                    }
                 }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
+                else // change projectile type
                 {
-                    game.Scene.FlashLight.Red += LightColorChangeAmount * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
-                {
-                    game.Scene.FlashLight.Green -= LightColorChangeAmount * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
-                {
-                    game.Scene.FlashLight.Green += LightColorChangeAmount * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
-                {
-                    game.Scene.FlashLight.Blue -= LightColorChangeAmount * deltaTime;
-                }
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
-                {
-                    game.Scene.FlashLight.Blue += LightColorChangeAmount * deltaTime;
-                }
-
-                // change projectile type
-                if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_7))
-                {
-                    Console.Beep(500, 200); // HACK: utilize the beep to notify the player that the type changed, and to delay the keystrokes, preventing the types from cycling quickly -- replace this with a keypress/key-up check instead
-                    settings.BulletType = (TeardownProjectileType)(((byte)settings.BulletType + 1) % Enum.GetValues(typeof(TeardownProjectileType)).Length);
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_1))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.RegularBullet;
+                        Console.Beep(420, 200);
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_2))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.SmallBullet;
+                        Console.Beep(440, 200);
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_3))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.LargeBullet;
+                        Console.Beep(460, 200);
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_4))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.Rocket;
+                        Console.Beep(480, 200);
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_5))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.Bomb;
+                        Console.Beep(500, 200);
+                    }
+                    if (_inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_6))
+                    {
+                        settings.ProjectileType = TeardownProjectileType.Force;
+                        Console.Beep(520, 200);
+                    }
                 }
 
                 lastMousePositionX = currentMousePositionX;

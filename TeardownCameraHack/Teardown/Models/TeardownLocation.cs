@@ -28,17 +28,17 @@ namespace TeardownCameraHack.Teardown.Models
         }
 
         public Vector3 Front => new Vector3(
-            -(float)Math.Cos(RotationY + Math.PI / 2),
+            -(float)Math.Cos(Yaw + Math.PI / 2),
             0.0f,
-            -(float)Math.Sin(RotationY + Math.PI / 2)
+            -(float)Math.Sin(Yaw + Math.PI / 2)
         );
 
         public Vector3 Back => -Front;
 
         public Vector3 Right => new Vector3(
-            (float)Math.Cos(RotationY),
+            (float)Math.Cos(Yaw),
             0.0f,
-            (float)Math.Sin(RotationY)
+            (float)Math.Sin(Yaw)
         );
 
         public Vector3 Left => -Right;
@@ -51,46 +51,39 @@ namespace TeardownCameraHack.Teardown.Models
 
         public Vector3 Down => -Up;
 
-        public float RotationX
+        public Quaternion Frame
         {
-            get => MathUtility.WrapAngle((float)Math.Atan2(Rotation3, Rotation1) * 2.0f);
+            get => new Quaternion(RotationX, RotationY, RotationZ, RotationW);
             set
             {
-                // ToDo: figure out rotation calculations
-                // Rotation1 = value;
-                // Rotation3 = value;
+                RotationW = value.X;
+                RotationX = value.Y;
+                RotationY = value.Z;
+                RotationZ = value.W;
             }
         }
 
-        public float RotationY
-        {
-            get => MathUtility.WrapAngle((float)Math.Atan2(Rotation4, Rotation2) * 2.0f);
-            set
-            {
-                Rotation2 = (float)Math.Sin(value);
-                Rotation4 = (float)Math.Cos(value);
-            }
-        }
+        public float Yaw => MathUtility.WrapAngle((float)Math.Atan2(RotationZ, RotationX) * 2.0f);
 
-        public float Rotation1
+        public float RotationW
         {
             get => Reader.Default.Read<float>(_address + 0x34, out _);
             set => Writer.Default.Write(_address + 0x34, value);
         }
 
-        public float Rotation2
+        public float RotationX
         {
             get => Reader.Default.Read<float>(_address + 0x38, out _);
             set => Writer.Default.Write(_address + 0x38, value);
         }
 
-        public float Rotation3
+        public float RotationY
         {
             get => Reader.Default.Read<float>(_address + 0x3C, out _);
             set => Writer.Default.Write(_address + 0x3C, value);
         }
 
-        public float Rotation4
+        public float RotationZ
         {
             get => Reader.Default.Read<float>(_address + 0x40, out _);
             set => Writer.Default.Write(_address + 0x40, value);
