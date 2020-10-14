@@ -158,6 +158,24 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_address + 0x1D8, value);
         }
 
+        public int Sensitivity
+        {
+            get => Reader.Default.Read<int>(_address + 0x2C8, out _);
+            set => Writer.Default.Write(_address + 0x2C8, value);
+        }
+
+        public int Smoothing
+        {
+            get => Reader.Default.Read<int>(_address + 0x2C4, out _);
+            set => Writer.Default.Write(_address + 0x2C4, value);
+        }
+
+        public int HeadBob
+        {
+            get => Reader.Default.Read<int>(_address + 0x2D0, out _);
+            set => Writer.Default.Write(_address + 0x2D0, value);
+        }
+
         public TeardownGame(ulong address)
         {
             _address = Reader.Default.Read<ulong>(address, out _);

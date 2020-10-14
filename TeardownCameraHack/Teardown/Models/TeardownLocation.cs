@@ -28,9 +28,10 @@ namespace TeardownCameraHack.Teardown.Models
         }
 
         public Vector3 Front => new Vector3(
-            -(float)Math.Cos(Yaw + Math.PI / 2),
-            0.0f,
-            -(float)Math.Sin(Yaw + Math.PI / 2)
+          (float)Math.Cos(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch),
+          //0.0f,
+          -(float)Math.Sin(Pitch),
+          (float)Math.Sin(Yaw + Math.PI / 2) * (float)Math.Cos(Pitch)
         );
 
         public Vector3 Back => -Front;
@@ -64,6 +65,8 @@ namespace TeardownCameraHack.Teardown.Models
         }
 
         public float Yaw => MathUtility.WrapAngle((float)Math.Atan2(RotationZ, RotationX) * 2.0f);
+
+        public float Pitch => MathUtility.WrapAngle((float)Math.Atan2(RotationZ, RotationW) * 2.0f);
 
         public float RotationW
         {
