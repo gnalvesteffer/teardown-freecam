@@ -40,10 +40,6 @@
           <HintPath>..\packages\Squalr.Engine.2.3.0.1\lib\netstandard2.0\Squalr.Engine.dll</HintPath>
           <Private>True</Private>
         </Reference>
-        <Reference Include="Squalr.Engine.Architecture, Version=2.3.0.1, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\packages\Squalr.Engine.Architecture.2.3.0.1\lib\netstandard2.0\Squalr.Engine.Architecture.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Squalr.Engine.Memory, Version=2.3.0.1, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\packages\Squalr.Engine.Memory.2.3.0.1\lib\netstandard2.0\Squalr.Engine.Memory.dll</HintPath>
           <Private>True</Private>
@@ -112,18 +108,6 @@
     <ItemGroup>
       <Content Include="Docs\disabled-patches.txt" />
       <Content Include="Docs\structures.txt" />
-      <Content Include="Library\fasm.exe">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Library\ml.exe">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Library\ml64.exe">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Library\nasm.exe">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

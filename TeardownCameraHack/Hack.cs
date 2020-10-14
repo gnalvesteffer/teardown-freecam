@@ -65,7 +65,7 @@ namespace TeardownCameraHack
             Console.WriteLine("Up/Down arrows to change fire size, and Shift+Down to reset fire size.");
             Console.WriteLine("Delete to remove all fires");
             Console.WriteLine("1,2,3,4,5,6 to change the projectile type.");
-            Console.WriteLine("SHIFT + 1,2,3,4,5,6 to change the flashlight color.");
+            Console.WriteLine("SHIFT+1,2,3,4,5,6 to change the flashlight color.");
             Console.WriteLine("0 to toggle fog.");
             Console.WriteLine("Capslock to toggle autoclicker.");
             Console.WriteLine("CTRL+R to restart level.");
