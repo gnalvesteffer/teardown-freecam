@@ -70,6 +70,12 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_address + 0x108, value);
         }
 
+        public bool IsGamePaused
+        {
+            get => Reader.Default.Read<byte>(_address + 0x138, out _) == 1;
+            set => Writer.Default.Write(_address + 0x138, value ? 1 : 0);
+        }
+
         public float SimulationTimeStep
         {
             get => Reader.Default.Read<float>(_address + 0x144, out _);
