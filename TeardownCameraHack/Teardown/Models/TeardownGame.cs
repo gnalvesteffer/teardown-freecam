@@ -88,6 +88,8 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_address + 0x150, value);
         }
 
+        public float DeltaTime => Reader.Default.Read<float>(_address + 0x16C, out _);
+
         public float DrawDistance
         {
             // valid range -1.0 through 1.0

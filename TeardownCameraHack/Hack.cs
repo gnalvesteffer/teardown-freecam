@@ -85,6 +85,8 @@ namespace TeardownCameraHack
             var lastMousePositionY = input.MouseWindowPositionY;
             var cameraRotationX = 0.0f;
             var cameraRotationY = 0.0f;
+            var lastFrameTime = 0.0f;
+
             var stopwatch = Stopwatch.StartNew();
             while (true)
             {
@@ -103,6 +105,12 @@ namespace TeardownCameraHack
                 {
                     continue;
                 }
+
+                if (Math.Abs(game.ActualTime - lastFrameTime) < 0.001f) // game is likely paused / window isn't focused (prevent input from hack from leaking out of game)
+                {
+                    continue;
+                }
+                lastFrameTime = game.ActualTime;
 
                 if (game.SimulationTime < 60.0f) // skip to end of level so that the last location of the camera path is always attempting to be reached
                 {
