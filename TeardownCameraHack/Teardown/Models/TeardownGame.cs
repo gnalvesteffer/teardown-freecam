@@ -166,6 +166,12 @@ namespace TeardownCameraHack.Teardown.Models
             set => Writer.Default.Write(_address + 0x1D8, value);
         }
 
+        public float FadeInDistortionAmount
+        {
+            get => Reader.Default.Read<float>(_address + 0x278, out _);
+            set => Writer.Default.Write(_address + 0x278, value);
+        }
+
         public int InputSensitivity
         {
             get => Reader.Default.Read<int>(_address + 0x2C8, out _);
